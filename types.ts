@@ -15,3 +15,8 @@ export interface DailyAverage {
   diastolic: number;
   pulse: number;
 }
+
+export interface AppSettings {
+  googleSheetUrl?: string;
+  lastSyncTime?: number;
+}

@@ -1,6 +1,7 @@
-import { BPRecord } from '../types';
+import { BPRecord, AppSettings } from '../types';
 
 const STORAGE_KEY = 'cardiotrack_data_v1';
+const SETTINGS_KEY = 'cardiotrack_settings_v1';
 
 export const getRecords = (): BPRecord[] => {
   try {
@@ -40,4 +41,20 @@ export const exportToCSV = (records: BPRecord[]): string => {
     ].join(',');
   });
   return [headers.join(','), ...rows].join('\n');
+};
+
+export const getSettings = (): AppSettings => {
+  try {
+    const data = localStorage.getItem(SETTINGS_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch (e) {
+    return {};
+  }
+};
+
+export const saveSettings = (settings: AppSettings): AppSettings => {
+  const current = getSettings();
+  const updated = { ...current, ...settings };
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated));
+  return updated;
 };

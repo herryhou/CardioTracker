@@ -3,15 +3,16 @@ import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine,
   ScatterChart, Scatter, Cell, ReferenceArea, Label
 } from 'recharts';
-import { Activity, BarChart2, Info } from 'lucide-react';
+import { Activity, BarChart2 } from 'lucide-react';
 import { BPRecord, TimeRange } from '../types';
 
 interface ChartSectionProps {
   records: BPRecord[];
 }
 
+// Helper to determine BP category based on standard guidelines
 const getCategory = (sys: number, dia: number) => {
-  if (sys > 180 || dia > 120) return { label: 'Crisis', color: '#881337', bg: 'bg-rose-900' };
+  if (sys > 180 || dia > 120) return { label: 'Severe', color: '#be123c', bg: 'bg-rose-800' }; // Hypertensive Crisis
   if (sys >= 140 || dia >= 90) return { label: 'Stage 2', color: '#e11d48', bg: 'bg-rose-600' };
   if (sys >= 130 || dia >= 80) return { label: 'Stage 1', color: '#f97316', bg: 'bg-orange-500' };
   if (sys >= 120 && dia < 80) return { label: 'Elevated', color: '#eab308', bg: 'bg-yellow-500' };
@@ -23,7 +24,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     const data = payload[0].payload;
     const category = getCategory(data.systolic, data.diastolic);
     return (
-      <div className="bg-white p-3 border border-slate-100 shadow-xl rounded-xl text-xs">
+      <div className="bg-white p-3 border border-slate-100 shadow-xl rounded-xl text-xs z-50 relative">
         <p className="font-semibold text-slate-700 mb-1">{data.dateFormatted}</p>
         <div className="flex items-center gap-2 mb-2">
           <div className={`w-2 h-2 rounded-full ${category.bg}`}></div>
@@ -86,12 +87,14 @@ const ChartSection: React.FC<ChartSectionProps> = ({ records }) => {
             <button
               onClick={() => setViewMode('trend')}
               className={`p-1.5 rounded-md transition-all ${viewMode === 'trend' ? 'bg-white shadow-sm text-rose-500' : 'text-slate-400'}`}
+              title="Trend View"
             >
               <Activity className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('distribution')}
               className={`p-1.5 rounded-md transition-all ${viewMode === 'distribution' ? 'bg-white shadow-sm text-blue-500' : 'text-slate-400'}`}
+              title="Distribution View"
             >
               <BarChart2 className="w-4 h-4" />
             </button>
@@ -115,7 +118,7 @@ const ChartSection: React.FC<ChartSectionProps> = ({ records }) => {
       </div>
 
       {/* Charts */}
-      <div className="h-72 w-full">
+      <div className="h-80 w-full relative">
         <ResponsiveContainer width="100%" height="100%">
           {viewMode === 'trend' ? (
             <LineChart data={data} margin={{ top: 10, right: 10, bottom: 5, left: -20 }}>
@@ -136,8 +139,10 @@ const ChartSection: React.FC<ChartSectionProps> = ({ records }) => {
               <Tooltip content={<CustomTooltip />} />
               
               {/* Threshold Lines */}
-              <ReferenceLine y={140} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.3} />
+              <ReferenceLine y={140} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.3} label={{ value: '140', fill: '#ef4444', fontSize: 10, position: 'right' }} />
+              <ReferenceLine y={120} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.3} label={{ value: '120', fill: '#22c55e', fontSize: 10, position: 'right' }} />
               <ReferenceLine y={90} stroke="#ef4444" strokeDasharray="3 3" strokeOpacity={0.3} />
+              <ReferenceLine y={80} stroke="#22c55e" strokeDasharray="3 3" strokeOpacity={0.3} />
               
               <Line 
                 type="monotone" 
@@ -158,49 +163,68 @@ const ChartSection: React.FC<ChartSectionProps> = ({ records }) => {
             </LineChart>
           ) : (
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
               <XAxis 
                 type="number" 
                 dataKey="systolic" 
                 name="Systolic" 
                 unit=" mmHg"
-                domain={[90, 'dataMax + 10']}
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                domain={[90, 200]}
+                tick={{ fontSize: 10, fill: '#64748b' }}
                 axisLine={false}
                 tickLine={false}
               >
-                <Label value="Systolic (mmHg)" offset={0} position="insideBottom" style={{ fill: '#94a3b8', fontSize: 10 }} />
+                <Label value="Systolic (X)" offset={0} position="insideBottom" style={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }} />
               </XAxis>
               <YAxis 
                 type="number" 
                 dataKey="diastolic" 
                 name="Diastolic" 
                 unit=" mmHg"
-                domain={[50, 'dataMax + 10']}
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                domain={[50, 130]}
+                tick={{ fontSize: 10, fill: '#64748b' }}
                 axisLine={false}
                 tickLine={false}
               >
-                <Label value="Diastolic (mmHg)" angle={-90} position="insideLeft" style={{ fill: '#94a3b8', fontSize: 10 }} />
+                <Label value="Diastolic (Y)" angle={-90} position="insideLeft" style={{ fill: '#94a3b8', fontSize: 10, fontWeight: 500 }} />
               </YAxis>
               <Tooltip content={<CustomTooltip />} cursor={{ strokeDasharray: '3 3' }} />
               
-              {/* Zones Backgrounds - Rendered first to be behind dots */}
-              {/* Normal Zone: Sys < 120 AND Dia < 80 */}
-              <ReferenceArea x1={0} x2={120} y1={0} y2={80} fill="#22c55e" fillOpacity={0.05} />
+              {/* 
+                  Color Zones using Painter's Algorithm (Back to Front)
+                  Guidelines:
+                  - Severe: >180 Sys OR >120 Dia
+                  - Stage 2: >=140 Sys OR >=90 Dia
+                  - Stage 1: 130-139 Sys OR 80-89 Dia
+                  - Elevated: 120-129 Sys AND <80 Dia
+                  - Normal: <120 Sys AND <80 Dia
+              */}
+
+              {/* Layer 1: Severe/Crisis (Background Base) */}
+              <ReferenceArea x1={0} x2={300} y1={0} y2={200} fill="#ffe4e6" fillOpacity={1} />
+
+              {/* Layer 2: Stage 2 (Limits: <180/120) */}
+              <ReferenceArea x1={0} x2={180} y1={0} y2={120} fill="#fee2e2" fillOpacity={1} />
               
-              {/* Grid Thresholds */}
-              <ReferenceLine x={120} stroke="#eab308" strokeDasharray="3 3" strokeOpacity={0.5} />
-              <ReferenceLine x={130} stroke="#f97316" strokeDasharray="3 3" strokeOpacity={0.5} />
-              <ReferenceLine x={140} stroke="#e11d48" strokeDasharray="3 3" strokeOpacity={0.5} />
+              {/* Layer 3: Stage 1 (Limits: <140/90) */}
+              <ReferenceArea x1={0} x2={140} y1={0} y2={90} fill="#ffedd5" fillOpacity={1} />
               
-              <ReferenceLine y={80} stroke="#eab308" strokeDasharray="3 3" strokeOpacity={0.5} />
-              <ReferenceLine y={90} stroke="#e11d48" strokeDasharray="3 3" strokeOpacity={0.5} />
+              {/* Layer 4: Elevated (Limits: <130/80) - Yellow Strip */}
+              <ReferenceArea x1={0} x2={130} y1={0} y2={80} fill="#fef9c3" fillOpacity={1} />
+              
+              {/* Layer 5: Normal (Limits: <120/80) - Green */}
+              <ReferenceArea x1={0} x2={120} y1={0} y2={80} fill="#dcfce7" fillOpacity={1} />
+
+              {/* Guidelines for key thresholds */}
+              <ReferenceLine x={120} stroke="#16a34a" strokeDasharray="3 3" strokeOpacity={0.3} />
+              <ReferenceLine y={80} stroke="#16a34a" strokeDasharray="3 3" strokeOpacity={0.3} />
+              <ReferenceLine x={140} stroke="#dc2626" strokeDasharray="3 3" strokeOpacity={0.3} />
+              <ReferenceLine y={90} stroke="#dc2626" strokeDasharray="3 3" strokeOpacity={0.3} />
 
               <Scatter name="Records" data={data}>
                 {data.map((entry, index) => {
                   const { color } = getCategory(entry.systolic, entry.diastolic);
-                  return <Cell key={`cell-${index}`} fill={color} />;
+                  return <Cell key={`cell-${index}`} fill={color} stroke="#fff" strokeWidth={2} />;
                 })}
               </Scatter>
             </ScatterChart>
@@ -220,18 +244,21 @@ const ChartSection: React.FC<ChartSectionProps> = ({ records }) => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] font-medium text-slate-500">
-             <div className="flex items-center gap-1">
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 text-[10px] font-medium text-slate-500">
+             <div className="flex items-center gap-1 bg-green-100 px-2 py-1 rounded-full border border-green-200 text-green-800">
               <div className="w-2 h-2 rounded-full bg-green-500"></div> Normal
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-200 text-yellow-800">
               <div className="w-2 h-2 rounded-full bg-yellow-500"></div> Elevated
             </div>
-             <div className="flex items-center gap-1">
+             <div className="flex items-center gap-1 bg-orange-100 px-2 py-1 rounded-full border border-orange-200 text-orange-800">
               <div className="w-2 h-2 rounded-full bg-orange-500"></div> Stage 1
             </div>
-             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 rounded-full bg-rose-600"></div> Stage 2
+             <div className="flex items-center gap-1 bg-red-100 px-2 py-1 rounded-full border border-red-200 text-red-800">
+              <div className="w-2 h-2 rounded-full bg-red-500"></div> Stage 2
+            </div>
+             <div className="flex items-center gap-1 bg-rose-200 px-2 py-1 rounded-full border border-rose-300 text-rose-900">
+              <div className="w-2 h-2 rounded-full bg-rose-800"></div> Severe
             </div>
           </div>
         )}
