@@ -43,6 +43,10 @@ export const exportToCSV = (records: BPRecord[]): string => {
   return [headers.join(','), ...rows].join('\n');
 };
 
+export const exportToJSON = (records: BPRecord[]): string => {
+  return JSON.stringify(records, null, 2);
+};
+
 export const getSettings = (): AppSettings => {
   try {
     const data = localStorage.getItem(SETTINGS_KEY);

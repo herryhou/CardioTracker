@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, FileSpreadsheet, History as HistoryIcon, LayoutDashboard, Settings, Cloud, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { Plus, FileSpreadsheet, FileJson, History as HistoryIcon, LayoutDashboard, Settings, Cloud, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { BPRecord, AppSettings } from './types';
 import * as storage from './services/storage';
 import { syncToGoogleSheets } from './services/syncService';
@@ -63,14 +63,24 @@ export default function App() {
     }
   };
 
-  const handleExport = () => {
-    const csv = storage.exportToCSV(records);
-    const blob = new Blob([csv], { type: 'text/csv' });
+  const downloadFile = (content: string, type: string, extension: string) => {
+    const blob = new Blob([content], { type });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cardiotrack_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `cardiotrack_export_${new Date().toISOString().split('T')[0]}.${extension}`;
     a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportCSV = () => {
+    const csv = storage.exportToCSV(records);
+    downloadFile(csv, 'text/csv', 'csv');
+  };
+
+  const handleExportJSON = () => {
+    const json = storage.exportToJSON(records);
+    downloadFile(json, 'application/json', 'json');
   };
   
   const handleDelete = (id: string) => {
@@ -173,12 +183,20 @@ export default function App() {
           <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-500">
              <div className="flex items-center justify-between mb-4 px-1">
                  <h2 className="text-xl font-bold text-slate-800">All Records</h2>
-                 <button 
-                   onClick={handleExport}
-                   className="text-xs font-medium text-slate-500 flex items-center gap-1 hover:text-slate-800"
-                 >
-                   <FileSpreadsheet className="w-4 h-4" /> CSV
-                 </button>
+                 <div className="flex items-center gap-3">
+                   <button 
+                     onClick={handleExportCSV}
+                     className="text-xs font-medium text-slate-500 flex items-center gap-1 hover:text-slate-800 bg-white px-2 py-1 rounded-md border border-slate-100 shadow-sm"
+                   >
+                     <FileSpreadsheet className="w-4 h-4 text-emerald-600" /> CSV
+                   </button>
+                   <button 
+                     onClick={handleExportJSON}
+                     className="text-xs font-medium text-slate-500 flex items-center gap-1 hover:text-slate-800 bg-white px-2 py-1 rounded-md border border-slate-100 shadow-sm"
+                   >
+                     <FileJson className="w-4 h-4 text-orange-500" /> JSON
+                   </button>
+                 </div>
              </div>
             
             {records.map(record => (
