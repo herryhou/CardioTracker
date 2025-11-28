@@ -47,26 +47,31 @@ Since this app uses TypeScript and React, it needs to be "built" before it can b
 ### Option 1: Cloudflare Pages (Recommended - Free & Fast)
 
 1.  **Log in** to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
-2.  In the sidebar, go to **Compute (Workers & Pages)**.
-3.  Click the **Create application** button (usually top right).
-4.  Switch to the **Pages** tab and click **Connect to Git**.
-5.  **Select your repository**:
-    *   You may need to authorize Cloudflare to access your GitHub account.
-    *   Select the repository containing your CardioTrack code.
-    *   Click **Begin setup**.
-6.  **Configure Build Settings**:
-    *   **Project name**: Leave as is or customize (this affects your URL).
-    *   **Production branch**: Usually `main` or `master`.
-    *   **Framework preset**: Select **Vite** (or React, but Vite is preferred if available).
+2.  In the left sidebar menu, find the **BUILD** section. Click **Compute & AI** to expand it, then select **Workers & Pages**.
+3.  On the "Workers & Pages" overview screen, click the **Create application** button (usually located in the top right corner).
+4.  You will see two tabs: "Workers" and "Pages". Switch to the **Pages** tab.
+5.  Click the **Connect to Git** button.
+6.  **Connect your repository**:
+    *   If prompted, authorize Cloudflare Pages to access your GitHub account.
+    *   From the list of repositories, find and select the one containing your CardioTrack code.
+    *   Click the **Begin setup** button.
+7.  **Configure Build Settings**:
+    *   **Project name**: This defaults to your repo name but can be changed. This will determine your app's URL (e.g., `project-name.pages.dev`).
+    *   **Production branch**: Ensure this matches your main branch (usually `main` or `master`).
+    *   **Framework preset**: Click the dropdown and select **Vite**.
     *   **Build command**: Ensure it is set to `npm run build`.
     *   **Build output directory**: Ensure it is set to `dist`.
-7.  **Environment Variables**:
-    *   Scroll down and click on **Environment variables (advanced)**.
+8.  **Set Environment Variables**:
+    *   Before clicking deploy, look for the **Environment variables (advanced)** section and click to expand it.
     *   Click **Add variable**.
     *   **Variable name**: `API_KEY`
-    *   **Value**: Your Google Gemini API Key.
-8.  Click **Save and Deploy**.
-9.  Wait for the build to complete. Once finished, Cloudflare will provide a unique URL (e.g., `https://cardiotrack.pages.dev`). You can now open this URL on your phone to install the app.
+    *   **Value**: Paste your Google Gemini API Key here (starts with `AIza...`).
+9.  **Deploy**:
+    *   Click the **Save and Deploy** button.
+    *   Cloudflare will now clone your repo, install dependencies, and build the app. You will see a log of this process.
+10. **Finish**:
+    *   Once you see the "Success!" message, you will see a link to your live site (e.g., `https://cardiotrack-pro.pages.dev`).
+    *   Open this link on your Android phone to install it.
 
 ### Option 2: Firebase Hosting (Google - Free Tier)
 
