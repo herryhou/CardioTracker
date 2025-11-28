@@ -10,6 +10,7 @@ A modern, mobile-first blood pressure and heart rate tracker built with React, T
 *   **Data Sync**: Sync your records to your own Google Sheet for safekeeping and analysis.
 *   **PWA Support**: Installable as a native-like app on Android and iOS.
 *   **Local Storage**: Your data stays on your device by default.
+*   **Export Options**: Download your data in CSV or JSON format.
 
 ## How to Install on Android
 
@@ -46,19 +47,26 @@ Since this app uses TypeScript and React, it needs to be "built" before it can b
 ### Option 1: Cloudflare Pages (Recommended - Free & Fast)
 
 1.  **Log in** to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
-2.  Go to **Compute (Workers & Pages)** > **Pages**.
-3.  Click **Connect to Git** and select your GitHub repository.
-4.  **Configure Build Settings**:
-    *   **Framework preset**: Select `Vite` (or `Create React App` depending on your setup).
-    *   **Build command**: `npm run build`
-    *   **Build output directory**: `dist`
-5.  **Environment Variables**:
-    *   Go to the "Environment variables" section.
-    *   Add variable: `API_KEY`
-    *   Value: Your Google Gemini API Key.
-6.  Click **Save and Deploy**.
-
-Cloudflare will give you a URL (e.g., `https://cardiotrack.pages.dev`). Open this on your phone to install.
+2.  In the sidebar, go to **Compute (Workers & Pages)**.
+3.  Click the **Create application** button (usually top right).
+4.  Switch to the **Pages** tab and click **Connect to Git**.
+5.  **Select your repository**:
+    *   You may need to authorize Cloudflare to access your GitHub account.
+    *   Select the repository containing your CardioTrack code.
+    *   Click **Begin setup**.
+6.  **Configure Build Settings**:
+    *   **Project name**: Leave as is or customize (this affects your URL).
+    *   **Production branch**: Usually `main` or `master`.
+    *   **Framework preset**: Select **Vite** (or React, but Vite is preferred if available).
+    *   **Build command**: Ensure it is set to `npm run build`.
+    *   **Build output directory**: Ensure it is set to `dist`.
+7.  **Environment Variables**:
+    *   Scroll down and click on **Environment variables (advanced)**.
+    *   Click **Add variable**.
+    *   **Variable name**: `API_KEY`
+    *   **Value**: Your Google Gemini API Key.
+8.  Click **Save and Deploy**.
+9.  Wait for the build to complete. Once finished, Cloudflare will provide a unique URL (e.g., `https://cardiotrack.pages.dev`). You can now open this URL on your phone to install the app.
 
 ### Option 2: Firebase Hosting (Google - Free Tier)
 
