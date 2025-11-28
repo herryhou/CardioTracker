@@ -49,8 +49,8 @@ Since this app uses TypeScript and React, it needs to be "built" before it can b
 1.  **Log in** to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
 2.  In the left sidebar menu, find the **BUILD** section. Click **Compute & AI** to expand it, then select **Workers & Pages**.
 3.  On the "Workers & Pages" overview screen, click the **Create application** button (usually located in the top right corner).
-4.  You will see two tabs: "Workers" and "Pages". Switch to the **Pages** tab.
-5.  Click the **Connect to Git** button.
+4.  You will see a screen titled **"Ship something new"**.
+5.  Click the **Continue with GitHub** button (or "Connect to Git").
 6.  **Connect your repository**:
     *   If prompted, authorize Cloudflare Pages to access your GitHub account.
     *   From the list of repositories, find and select the one containing your CardioTrack code.
@@ -58,9 +58,8 @@ Since this app uses TypeScript and React, it needs to be "built" before it can b
 7.  **Configure Build Settings**:
     *   **Project name**: This defaults to your repo name but can be changed. This will determine your app's URL (e.g., `project-name.pages.dev`).
     *   **Production branch**: Ensure this matches your main branch (usually `main` or `master`).
-    *   **Framework preset**: Click the dropdown and select **Vite**.
-    *   **Build command**: Ensure it is set to `npm run build`.
-    *   **Build output directory**: Ensure it is set to `dist`.
+    *   **Framework preset**: **IMPORTANT**: Click the dropdown and select **Vite**.
+        *   This will automatically set the *Build command* to `npm run build` and *Build output directory* to `dist`.
 8.  **Set Environment Variables**:
     *   Before clicking deploy, look for the **Environment variables (advanced)** section and click to expand it.
     *   Click **Add variable**.
