@@ -12,27 +12,6 @@ A modern, mobile-first blood pressure and heart rate tracker built with React, T
 *   **Local Storage**: Your data stays on your device by default.
 *   **Export Options**: Download your data in CSV or JSON format.
 
-## Development: Running Locally
-
-To run this application on your local machine for development:
-
-1.  **Install Node.js**: Ensure you have Node.js installed.
-2.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
-3.  **Setup Environment Variables**:
-    *   Create a `.env` file in the root directory.
-    *   Add your Gemini API Key:
-        ```env
-        API_KEY=AIzaSy...
-        ```
-4.  **Run Development Server**:
-    ```bash
-    npm run dev
-    ```
-5.  **Open Browser**: Visit the URL shown in the terminal (usually `http://localhost:5173`).
-
 ## How to Install on Android
 
 CardioTrack Pro is a Progressive Web App (PWA), meaning you can install it directly from your browser without using the Play Store.
@@ -70,20 +49,20 @@ Since this app uses TypeScript and React, it needs to be "built" before it can b
 1.  **Log in** to the [Cloudflare Dashboard](https://dash.cloudflare.com/).
 2.  In the left sidebar menu, find the **BUILD** section. Click **Compute & AI** to expand it, then select **Workers & Pages**.
 3.  On the "Workers & Pages" overview screen, click the **Create application** button.
-4.  **⚠️ CRITICAL STEP**: On the next screen ("Ship something new"), you will likely see options like "Connect to Git" immediately.
-    *   Ensure you are creating a **Pages** project, not a Worker.
-    *   If you see "Configure your Worker project", you are in the wrong flow. Go back to the dashboard and ensure you selected the **Pages** tab at the top of the "Workers & Pages" screen if visible, or look for "Connect to Git" specifically under the Pages section.
+4.  **⚠️ CRITICAL STEP**: On the next screen ("Ship something new"), look at the top or center tabs.
+    *   **Select the "Pages" tab.** (Do NOT select "Workers").
+    *   If you see "Configure your Worker project", you are in the wrong place. Go back.
 5.  Click the **Connect to Git** button.
 6.  **Connect your repository**:
     *   If prompted, authorize Cloudflare Pages to access your GitHub account.
     *   From the list of repositories, find and select the one containing your CardioTrack code.
     *   Click the **Begin setup** button.
-7.  **Configure Build Settings**:
+7.  **Configure Build Settings** (If you are in the right place, you will see "Framework preset"):
     *   **Project name**: Defaults to your repo name.
     *   **Framework preset**: Click the dropdown and select **Vite**.
         *   *Check*: Build command should be `npm run build`.
         *   *Check*: Build output directory should be `dist`.
-    *   *If you do not see "Framework preset" and see "Deploy command: npx wrangler deploy" instead, you are in the Workers setup. Go back and restart.*
+    *   *If you do not see "Framework preset" and see "Deploy command: npx wrangler deploy" instead, you selected Workers in step 4. Go back and select Pages.*
 8.  **Set Environment Variables**:
     *   Look for the **Environment variables (advanced)** section and click to expand it.
     *   Click **Add variable**.
